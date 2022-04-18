@@ -1,109 +1,95 @@
-import { useForm } from "react-hook-form"
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { Link } from 'react-router-dom'
+import { Button, Card, Grid, TextField, Typography } from '@mui/material'
+import FaceIcon from '@mui/icons-material/Face'
+import { setToken } from '../../helpers/authHelper'
 
 const schema = yup.object({
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
   email: yup.string().required().email(),
-  password: yup.string().required(),
-  phoneNumber: yup.string().required(),
-  phoneExtension: yup.string().required()
+  password: yup.string().required()
 })
 
 export const SignUp = () => {
-  const { register, handleSubmit, formState: {errors} } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
-  });
+  })
 
-  const onHandleSubmit = (data) => {
-    let formData = new FormData()
-    Object.entries(data).forEach(e => {
-      console.log(e)
-    })
+  const onHandleSubmit = async (data) => {
+    const options = {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.email, password: data.password })
+    }
 
+    // eslint-disable-next-line no-undef
+    const res = await fetch('http://localhost:3000/auth/signup', options)
+    const dataRes = await res.json()
+    setToken(dataRes.token)
+
+    window.location = '/dashboard'
   }
 
   return (
-    <div className="flex">
-      <div className="w-full h-screen bg-slate-800">
-      </div>
+    <Grid
+      container
+      spacing={0}
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
+      style={{ minHeight: '100vh', backgroundColor: '#0B0F19' }}
+    >
+      <Card sx={cardStyle}>
+        <form onSubmit={handleSubmit(onHandleSubmit)} style={formStyle}>
+          <FaceIcon fontSize='large' />
+          <Typography sx={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }} gutterBottom>
+            Registrate
+          </Typography>
+          <div>
+            <TextField
+              {...register('email')}
+              sx={{ width: '22rem' }}
+              id='outlined-helperText'
+              label='Correo'
+              margin='normal'
+              size='small'
+              focused
+            />
+            <p>{errors.email?.message}</p>
+          </div>
 
-      <div className="w-full h-screen flex flex-col justify-center items-center">
-        <div className="mx-20">
-          <h1 className="text-center text-4xl font-extrabold mb-10">Crea una Nueva Cuenta</h1>
-          <form onSubmit={handleSubmit(onHandleSubmit)}>
+          <div className='mb-6'>
+            <TextField
+              {...register('password')}
+              sx={{ width: '22rem' }}
+              margin='normal'
+              size='small'
+              focused
+              label='Contrasena'
+              type='password'
+            />
+            <p>{errors.password?.message}</p>
+          </div>
 
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
-              <input
-                {...register("firstName")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Paul"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.firstName?.message}</p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Apellido</label>
-              <input
-                {...register("lastName")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Jones"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.lastName?.message}</p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Numero de Telefono</label>
-              <input
-                {...register("phoneNumber")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="(300)-232-45-34"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.phoneNumber?.message}</p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Extension de Telefono</label>
-              <input
-                {...register("phoneExtension")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="(300)-232-45-34"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.phoneExtension?.message}</p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Correo Electronico</label>
-              <input
-                {...register("email")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="pauljones@test.com"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.email?.message}</p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
-              <input
-                {...register("password")}
-                type="password"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="***********"
-                />
-              <p className="mt-1 text-red-500 text-xs italic">{errors.password?.message}</p>
-            </div>
-
-            <div className="flex justify-between space-x-2">
-              <input type="submit" value={"Ir allá!"} className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-600 text-white cursor-pointer" />
-              <Link className="rounded-none bg-gray-800 hover:bg-gray-600 w-full text-center	text-white py-2 px-7" to="/login">Inicia Sesion</Link>
-            </div>
-          </form>
-        </div>
-      </div>
-
-    </div>
+          <Grid sx={{ display: 'flex', flexDirection: 'column' }} spacing={3}>
+            <Button type='submit' variant='contained' size='medium'>Ir alla!</Button>
+            <Link to='/login' style={{ color: '#6A7687', textDecoration: 'none', fontSize: '.8em', marginTop: '1em' }}>Ya tienes una cuenta? Entra!</Link>
+          </Grid>
+        </form>
+      </Card>
+    </Grid>
   )
+}
+
+const cardStyle = {
+  backgroundColor: '#111927',
+  padding: 4,
+  color: 'white',
+  display: 'flex'
+}
+
+const formStyle = {
+  color: 'white',
+  textAlign: 'center'
 }
