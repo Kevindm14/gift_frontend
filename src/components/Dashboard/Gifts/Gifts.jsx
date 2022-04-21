@@ -74,7 +74,6 @@ export const Gifts = () => {
                           <TableCell align='right'>{row.createdAt}</TableCell>
                           <TableCell align='right'>{row.updatedAt}</TableCell>
                           <TableCell align='right'>
-                            <Button variant='contained' size='small'>Editar</Button>
                             <Button variant='contained' sx={{ marginLeft: '1em' }} color='error' size='small'>Borrar</Button>
                           </TableCell>
                         </TableRow>
